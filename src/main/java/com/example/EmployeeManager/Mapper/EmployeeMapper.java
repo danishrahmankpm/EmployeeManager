@@ -1,5 +1,7 @@
 package com.example.EmployeeManager.Mapper;
 
+import java.util.List;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
@@ -27,6 +29,17 @@ public class EmployeeMapper {
     }
     public void updateDtoFromEntity(Employee entity, EmployeeDto dto) {
         modelMapper.map(entity, dto);
+    }
+
+    public List<EmployeeDto> toDtoList(List<Employee> byDepartmentId) {
+        return byDepartmentId.stream()
+            .map(this::toDto)
+            .toList();
+    }
+    public List<Employee> toEntityList(List<EmployeeDto> employeeDtos) {
+        return employeeDtos.stream()
+            .map(this::toEntity)
+            .toList();
     }
     
 }

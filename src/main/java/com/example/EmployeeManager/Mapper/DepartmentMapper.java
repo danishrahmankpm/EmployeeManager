@@ -1,5 +1,7 @@
 package com.example.EmployeeManager.Mapper;
 
+import java.util.List;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
@@ -33,6 +35,16 @@ public class DepartmentMapper {
             .setPropertyCondition(ctx -> ctx.getDestination() == null);
 
         skipNonNullMapper.map(sourceEntity, targetDto);
+    }
+    public List<DepartmentDto> toDtoList(List<Department> departments) {
+        return departments.stream()
+            .map(this::toDto)
+            .toList();
+    }
+    public List<Department> toEntityList(List<DepartmentDto> departmentDtos) {
+        return departmentDtos.stream()
+            .map(this::toEntity)
+            .toList();
     }
 }
 

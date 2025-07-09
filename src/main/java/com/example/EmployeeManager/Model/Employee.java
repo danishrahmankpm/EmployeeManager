@@ -1,9 +1,7 @@
 package com.example.EmployeeManager.Model;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -19,7 +17,6 @@ public class Employee {
     @Id
     @GeneratedValue(generator = "UUID")
     private UUID id;
-
     private String name;
     private LocalDate dob;
     private BigDecimal salary;

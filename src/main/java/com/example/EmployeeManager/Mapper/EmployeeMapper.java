@@ -28,11 +28,5 @@ public class EmployeeMapper {
     public void updateDtoFromEntity(Employee entity, EmployeeDto dto) {
         modelMapper.map(entity, dto);
     }
-    public void fillMissingDtoFieldsFromEntity(EmployeeDto targetDto, Employee sourceEntity) {
-        ModelMapper skipNonNullMapper = new ModelMapper();
-        skipNonNullMapper.getConfiguration()
-            .setPropertyCondition(ctx -> ctx.getDestination() == null);
-
-        skipNonNullMapper.map(sourceEntity, targetDto);
-    }
+    
 }

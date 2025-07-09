@@ -33,7 +33,7 @@ public class EmployeeController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Employee> update(@PathVariable UUID id, @RequestBody EmployeeDto dto) {
+    public ResponseEntity<Employee> update (@PathVariable UUID id, @RequestBody EmployeeDto dto) {
         return ResponseEntity.ok(service.update(id, dto));
     }
 

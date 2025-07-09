@@ -1,9 +1,7 @@
 package com.example.EmployeeManager.Model;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -19,6 +17,7 @@ import lombok.Data;
 public class Department {
     @Id
     @GeneratedValue(generator = "UUID")
+    
     private UUID id;
 
     private String name;

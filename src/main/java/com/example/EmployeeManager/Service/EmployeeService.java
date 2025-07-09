@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import com.example.EmployeeManager.Dto.EmployeeDto;
 import com.example.EmployeeManager.Mapper.DepartmentMapper;
 import com.example.EmployeeManager.Mapper.EmployeeMapper;
-import com.example.EmployeeManager.Model.Department;
+
 import com.example.EmployeeManager.Model.Employee;
 import com.example.EmployeeManager.Repository.DepartmentRepository;
 import com.example.EmployeeManager.Repository.EmployeeRepository;
@@ -46,14 +46,6 @@ public class EmployeeService {
     }
 
     public Employee create(EmployeeDto employeeDto) throws NotFoundException {
-        Department dept=departmentRepository.findById(employeeDto.getDepartmentId())
-            .orElseThrow(() -> new NotFoundException());
-        
-        Employee manager=employeeRepository.findById(employeeDto.getManagerId())
-            .orElseThrow(() -> new NotFoundException());
-        
-        employeeDto.setDepartment(dept);
-        employeeDto.setManager(manager);
         return employeeRepository.save(employeeMapper.toEntity(employeeDto));
 
     }
@@ -61,22 +53,9 @@ public class EmployeeService {
     public Employee update(UUID id, EmployeeDto dto) throws NotFoundException {
         Employee existing = employeeRepository.findById(id)
         .orElseThrow(() -> new NotFoundException());
-
         // Map updated fields onto the existing entity
-        employeeMapper.fillMissingDtoFieldsFromEntity(dto, existing);
-
-        // Update relationships manually if required
-        Department dept = departmentRepository.findById(dto.getDepartmentId())
-            .orElseThrow(() -> new NotFoundException());
-        dto.setDepartment(dept);
-
-        
-        Employee manager = employeeRepository.findById(dto.getManagerId())
-            .orElseThrow(() -> new NotFoundException());
-        dto.setManager(manager);
-        
-
-        Employee saved = employeeRepository.save(employeeMapper.toEntity(dto));
+        employeeMapper.updateEntityFromDto(dto, existing);
+        Employee saved = employeeRepository.save(existing);
         return saved;
     }
     

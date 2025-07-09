@@ -29,27 +29,36 @@ public class EmployeeController {
 
     @PostMapping("/create")
     public ResponseEntity<Employee> create(@RequestBody EmployeeDto dto) {
-        return ResponseEntity.ok(service.create(dto));
+        try {
+            return ResponseEntity.ok(service.create(dto));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Employee> update (@PathVariable UUID id, @RequestBody EmployeeDto dto) {
-        return ResponseEntity.ok(service.update(id, dto));
-    }
+    public ResponseEntity<Employee> update(@PathVariable UUID id, @RequestBody EmployeeDto dto) {
+        try {
+            return ResponseEntity.ok(service.update(id, dto));
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }   
 
     @PatchMapping("/{id}/department")
-    public ResponseEntity<Void> changeDepartment(@PathVariable UUID id, @RequestParam UUID departmentId) {
-        service.changeDepartment(id, departmentId);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Employee> updateEmployeeDepartment(
+            @PathVariable UUID id, @RequestParam UUID departmentId) {
+        try {
+            return ResponseEntity.ok(service.updateEmplyeeDepartment(id, departmentId));
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    @GetMapping
-    public ResponseEntity<Page<Employee>> getAll(@PageableDefault(size = 20) Pageable pageable) {
-        return ResponseEntity.ok(service.getAll(pageable));
+    @GetMapping("/all")
+    public ResponseEntity<Page<EmployeeDto>> getAll() {
+        return ResponseEntity.ok(service.getAll());
     }
 
-    @GetMapping("/lookup")
-    public ResponseEntity<List<EmployeeNameIdDto>> lookup() {
-        return ResponseEntity.ok(service.getAllNameAndId());
-    }
+    
 }

@@ -27,7 +27,7 @@ import com.example.EmployeeManager.Service.EmployeeService;
 public class EmployeeController {
     @Autowired private EmployeeService service;
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<Employee> create(@RequestBody EmployeeDto dto) {
         return ResponseEntity.ok(service.create(dto));
     }

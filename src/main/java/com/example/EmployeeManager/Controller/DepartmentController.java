@@ -1,7 +1,6 @@
 package com.example.EmployeeManager.Controller;
 
 import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.example.EmployeeManager.Dto.DepartmentDto;
 import com.example.EmployeeManager.Dto.EmployeeDto;
 import com.example.EmployeeManager.Model.Department;
@@ -57,7 +55,7 @@ public class DepartmentController {
             return ResponseEntity.notFound().build();
         }
     }
-    
+
     @GetMapping("/{id}/lookup")
     public ResponseEntity<Page<EmployeeDto>> getEmployeesByDepartment(@PathVariable UUID id, @PageableDefault(page = 0, size = 20) Pageable pageable) {
         try {

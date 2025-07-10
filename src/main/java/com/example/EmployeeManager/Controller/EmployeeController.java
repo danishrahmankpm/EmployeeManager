@@ -1,8 +1,6 @@
 package com.example.EmployeeManager.Controller;
 
-import java.util.List;
 import java.util.UUID;
-
 import org.springframework.data.domain.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -17,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.example.EmployeeManager.Dto.EmployeeDto;
 import com.example.EmployeeManager.Model.Employee;
 import com.example.EmployeeManager.Service.EmployeeService;

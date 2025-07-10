@@ -54,11 +54,11 @@ public class DepartmentService {
         return departmentRepository.save(existing);
     }
 
-    public Page<DepartmentDto> getAll() {
+    public Page<DepartmentDto> getAll(Pageable pageable) {
         // This method should return a paginated list of departments
         List<Department> departments = departmentRepository.findAll();
         List<DepartmentDto> departmentDtos = departmentMapper.toDtoList(departments);
-        Page<DepartmentDto> departmentPage = new PageImpl<>(departmentDtos, Pageable.unpaged(), departments.size());
+        Page<DepartmentDto> departmentPage = new PageImpl<>(departmentDtos, pageable, departments.size());
         return departmentPage;
     }
 
@@ -69,8 +69,8 @@ public class DepartmentService {
         
             return departmentMapper.toDto(department);
     }
-    
-    public Page<EmployeeDto> getEmployeesByDepartment(UUID departmentId) throws NotFoundException {
+
+    public Page<EmployeeDto> getEmployeesByDepartment(UUID departmentId,Pageable pageable) throws NotFoundException {
         Department department = departmentRepository.findById(departmentId)
             .orElseThrow(() -> new NotFoundException());
         
@@ -79,7 +79,7 @@ public class DepartmentService {
             throw new NotFoundException();
         }
         List<EmployeeDto> employeeDtos = employeeMapper.toDtoList(employees);
-        Page<EmployeeDto> employeePage = new PageImpl<>(employeeDtos, Pageable.unpaged(), employeeDtos.size());
+        Page<EmployeeDto> employeePage = new PageImpl<>(employeeDtos, pageable, employeeDtos.size());
         return employeePage;
     }
 

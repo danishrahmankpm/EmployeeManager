@@ -6,7 +6,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 import com.example.EmployeeManager.Dto.EmployeeDto;
+import com.example.EmployeeManager.Dto.EmployeeNameIdDto;
 import com.example.EmployeeManager.Model.Employee;
+
 
 @Component
 public class EmployeeMapper {
@@ -39,6 +41,17 @@ public class EmployeeMapper {
     public List<Employee> toEntityList(List<EmployeeDto> employeeDtos) {
         return employeeDtos.stream()
             .map(this::toEntity)
+            .toList();
+    }
+
+    public List<EmployeeNameIdDto> toNameIdDtoList(List<Employee> employees) {
+        return employees.stream()
+            .map(employee -> {
+                EmployeeNameIdDto dto = new EmployeeNameIdDto();
+                dto.setName(employee.getName());
+                dto.setId(employee.getId().toString());
+                return dto;
+            })
             .toList();
     }
     

@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.EmployeeManager.Dto.EmployeeDto;
+import com.example.EmployeeManager.Dto.EmployeeNameIdDto;
 import com.example.EmployeeManager.Mapper.DepartmentMapper;
 import com.example.EmployeeManager.Mapper.EmployeeMapper;
 
@@ -33,11 +34,11 @@ public class EmployeeService {
 
     
 
-    public Page<EmployeeDto> getAll() {
+    public Page<EmployeeDto> getAll(Pageable pageable) {
         // This method should return a paginated list of employees
         List<Employee> employees= employeeRepository.findAll();
         List<EmployeeDto> employeeDtos = employeeMapper.toDtoList(employees);
-        Page<EmployeeDto> employeePage = new PageImpl<>(employeeDtos, Pageable.unpaged(), employeeDtos.size());
+        Page<EmployeeDto> employeePage = new PageImpl<>(employeeDtos, pageable, employeeDtos.size());
         return employeePage;
     }
 
@@ -69,14 +70,20 @@ public class EmployeeService {
         return employeeRepository.save(employee);
     } 
 
-    public Page<EmployeeDto> getEmployeesById(UUID departmentId) throws NotFoundException {
+    public Page<EmployeeDto> getEmployeesById(UUID departmentId,Pageable pageable) throws NotFoundException {
         if (departmentRepository.findById(departmentId).isEmpty()) {
             throw new NotFoundException();
         }
         
         List<Employee> employees = employeeRepository.findByDepartmentId(departmentId);
         List<EmployeeDto> employeeDtos = employeeMapper.toDtoList(employees);
-        Page<EmployeeDto> employeePage = new PageImpl<>(employeeDtos, Pageable.unpaged(), employeeDtos.size());
+        Page<EmployeeDto> employeePage = new PageImpl<>(employeeDtos, pageable, employeeDtos.size());
+        return employeePage;
+    }
+    public Page<EmployeeNameIdDto> getEmployeeNamesAndIds(Pageable pageable) {
+        List<Employee> employees = employeeRepository.findAll();
+        List<EmployeeNameIdDto> employeeDtos = employeeMapper.toNameIdDtoList(employees);
+        Page<EmployeeNameIdDto> employeePage = new PageImpl<>(employeeDtos, pageable, employeeDtos.size());
         return employeePage;
     }
     

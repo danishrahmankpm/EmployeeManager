@@ -5,9 +5,13 @@ import java.util.List;
 import java.util.UUID;
 import com.example.EmployeeManager.Model.Employee;
 
-import lombok.Data; 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor; 
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class DepartmentDto {
        
     
@@ -18,5 +22,5 @@ public class DepartmentDto {
     private List<Employee> employees;
     
     
-
 }
+

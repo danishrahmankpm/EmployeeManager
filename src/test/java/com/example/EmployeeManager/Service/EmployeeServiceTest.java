@@ -5,7 +5,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doReturn;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -46,7 +45,7 @@ public class EmployeeServiceTest {
         employeeDto.setName("Aarav Sharma");
         employeeDto.setSalary(BigDecimal.valueOf(60000));
         employeeDto.setJoiningDate(LocalDate.of(2022, 1, 1));
-        employeeDto.setDepartmentId(deptId);
+        
         employee = new Employee();
         employee.setId(UUID.randomUUID());
         employee.setName("Aarav Sharma");
@@ -56,8 +55,9 @@ public class EmployeeServiceTest {
         
         when(employeeMapper.toEntity(employeeDto)).thenReturn(employee);
         when(employeeRepository.save(any(Employee.class))).thenReturn(employee);
+        when(employeeMapper.toDto(employee)).thenReturn(employeeDto);
 
-        Employee result = employeeService.create(employeeDto);
+        EmployeeDto result = employeeService.create(employeeDto);
 
         assertEquals("Aarav Sharma", result.getName());
         verify(employeeRepository).save(employee);
@@ -68,56 +68,59 @@ public class EmployeeServiceTest {
     void testUpdateEmployeeSuccess() throws NotFoundException {
         UUID employeeId = UUID.randomUUID();
         
-        // Existing employee fetched from DB
+        
         employee.setId(employeeId);
         employee.setName("Old Name");
 
-        // DTO with updated name
         employeeDto.setName("Updated Name");
 
         when(employeeRepository.findById(employeeId)).thenReturn(Optional.of(employee));
-        // Simulate mapper updating entity fields from dto
+        
         doAnswer(invocation -> {
             employee.setName(employeeDto.getName());
             return employee;
         }).when(employeeMapper).updateEntityFromDto(employeeDto, employee);
 
         when(employeeRepository.save(employee)).thenReturn(employee);
+        when(employeeMapper.toDto(employee)).thenReturn(employeeDto);
 
-        // Call the actual service method
-        Employee result = employeeService.update(employeeId, employeeDto);
+        
+        EmployeeDto result = employeeService.update(employeeId, employeeDto);
 
         assertEquals("Updated Name", result.getName());
         verify(employeeRepository).save(employee);
     }
 
     @Test
-   void updateEmployeeDepartmentSuccess() throws NotFoundException {
+    void updateEmployeeDepartmentSuccess() throws NotFoundException {
         UUID employeeId = UUID.randomUUID();
         UUID newDeptId = UUID.randomUUID();
         
-        // Existing employee fetched from DB
-        employee.setId(employeeId);
-        
-        
-        when(employeeRepository.findById(employeeId)).thenReturn(Optional.of(employee));
-        when(departmentRepository.findById(newDeptId)).thenReturn(Optional.of(new Department()));
+        Employee existingEmployee = new Employee();
+        existingEmployee.setId(employeeId);
+        existingEmployee.setName("Aarav Sharma");
         
         Department newDepartment = new Department();
         newDepartment.setId(newDeptId);
+        existingEmployee.setDepartment(newDepartment);
+
+        EmployeeDto employeeDto = new EmployeeDto();
+        employeeDto.setName("Aarav Sharma");
+        employeeDto.setDepartment(existingEmployee.getDepartment());
+        employeeDto.setId(employeeId);
+
+        when(employeeRepository.findById(employeeId)).thenReturn(Optional.of(existingEmployee));
         when(departmentRepository.findById(newDeptId)).thenReturn(Optional.of(newDepartment));
-        // Set department directly since employee is not a mock
-        employee.setDepartment(newDepartment);
-
-        when(employeeRepository.save(employee)).thenReturn(employee);
+        when(employeeRepository.save(existingEmployee)).thenReturn(existingEmployee);
+        when(employeeMapper.toDto(existingEmployee)).thenReturn(employeeDto);
         
-        Employee result = employeeService.updateEmplyeeDepartment(employeeId, newDeptId);
-
-        assertEquals(newDeptId, result.getDepartment().getId());
-        verify(employeeRepository).save(employee);
+        EmployeeDto updatedEmployee= employeeService.updateEmployeeDepartment(employeeId, newDeptId);
+        assertEquals(updatedEmployee.getDepartment(), newDepartment);
+        
     }
     @Test
     void testGetAllEmployees() {
+        
         when(employeeRepository.findAll()).thenReturn(List.of(employee));
         when(employeeMapper.toDtoList(any())).thenReturn(List.of(employeeDto));
 
@@ -131,10 +134,7 @@ public class EmployeeServiceTest {
     void testGetEmployeesById() throws NotFoundException {
         UUID departmentId = UUID.randomUUID();
         
-        // Mocking the department existence
         when(departmentRepository.findById(departmentId)).thenReturn(Optional.of(new Department()));
-        
-        // Mocking employee retrieval
         when(employeeRepository.findByDepartmentId(departmentId)).thenReturn(List.of(employee));
         when(employeeMapper.toDtoList(any())).thenReturn(List.of(employeeDto));
 

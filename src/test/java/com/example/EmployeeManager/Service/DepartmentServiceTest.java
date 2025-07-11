@@ -3,8 +3,6 @@ package com.example.EmployeeManager.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,9 +11,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.data.domain.Page;
-
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -44,34 +41,39 @@ public class DepartmentServiceTest {
     void testCreateDepartmentSuccess() {
         DepartmentDto departmentDto = new DepartmentDto();
         departmentDto.setName("Engineering");
-
         Department department = new Department();
+        department.setId(UUID.randomUUID());
         department.setName("Engineering");
+        departmentDto.setId(department.getId());
 
         when(departmentMapper.toEntity(departmentDto)).thenReturn(department);
         when(departmentRepository.save(any(Department.class))).thenReturn(department);
+        when(departmentMapper.toDto(department)).thenReturn(departmentDto);
 
-        Department result = departmentService.createDepartment(departmentDto);
+        DepartmentDto result = departmentService.createDepartment(departmentDto);
 
         assertEquals("Engineering", result.getName());
         verify(departmentRepository).save(department);
     }
+
     @Test
     void testUpdateDepartmentSuccess() throws NotFoundException {
         UUID id = UUID.randomUUID();
-        DepartmentDto departmentDto = new DepartmentDto();
-        departmentDto.setName("Engineering");
-
         Department existingDepartment = new Department();
         existingDepartment.setId(id);
         existingDepartment.setName("Engineering");
 
+        DepartmentDto departmentDto = new DepartmentDto();
+        departmentDto.setName("Engineering");
+        departmentDto.setId(id);
+        
         when(departmentRepository.findById(id)).thenReturn(Optional.of(existingDepartment));
       
         doNothing().when(departmentMapper).updateEntityFromDto(departmentDto, existingDepartment);
         when(departmentRepository.save(existingDepartment)).thenReturn(existingDepartment);
+        when(departmentMapper.toDto(existingDepartment)).thenReturn(departmentDto);
 
-        Department result = departmentService.updateDepartment(id, departmentDto);
+        DepartmentDto result = departmentService.updateDepartment(id, departmentDto);
 
         assertEquals("Engineering", result.getName());
         verify(departmentRepository).save(existingDepartment);
@@ -139,7 +141,6 @@ public class DepartmentServiceTest {
         employeeDto.setName("John Doe");
         
         when(departmentRepository.findById(departmentId)).thenReturn(Optional.of(department));
-        // Return an empty list of Employee as a placeholder; adjust as needed for your test
         when(employeeRepository.findByDepartmentId(departmentId)).thenReturn(List.of(employee));
         when(employeeMapper.toDtoList(List.of(employee))).thenReturn(List.of(employeeDto));
 

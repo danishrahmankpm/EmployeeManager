@@ -26,7 +26,7 @@ public class DepartmentController {
     private DepartmentService departmentService;
 
     @PostMapping("/create")
-    public ResponseEntity<Department> createDepartment(@RequestBody DepartmentDto departmentDto) {
+    public ResponseEntity<DepartmentDto> createDepartment(@RequestBody DepartmentDto departmentDto) {
         return ResponseEntity.ok(departmentService.createDepartment(departmentDto));
     }
 
@@ -40,7 +40,7 @@ public class DepartmentController {
         }
     }
     @PostMapping("/{id}/update")
-    public ResponseEntity<Department> updateDepartment(@PathVariable UUID id, @RequestBody DepartmentDto departmentDto) {
+    public ResponseEntity<DepartmentDto> updateDepartment(@PathVariable UUID id, @RequestBody DepartmentDto departmentDto) {
         try {
             return ResponseEntity.ok(departmentService.updateDepartment(id, departmentDto));
         } catch (Exception e) {

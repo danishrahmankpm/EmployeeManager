@@ -41,21 +41,21 @@ public class EmployeeService {
 
     
 
-    public Employee create(EmployeeDto employeeDto) throws NotFoundException {
-        return employeeRepository.save(employeeMapper.toEntity(employeeDto));
+    public EmployeeDto create(EmployeeDto employeeDto) throws NotFoundException {
+        return employeeMapper.toDto(employeeRepository.save(employeeMapper.toEntity(employeeDto)));
 
     }
 
-    public Employee update(UUID id, EmployeeDto dto) throws NotFoundException {
+    public EmployeeDto update(UUID id, EmployeeDto dto) throws NotFoundException {
         Employee existing = employeeRepository.findById(id)
         .orElseThrow(() -> new NotFoundException());
         // Map updated fields onto the existing entity
         employeeMapper.updateEntityFromDto(dto, existing);
         Employee saved = employeeRepository.save(existing);
-        return saved;
+        return employeeMapper.toDto(saved);
     }
     
-    public Employee updateEmplyeeDepartment(UUID id, UUID departmentId) throws NotFoundException {
+    public EmployeeDto updateEmployeeDepartment(UUID id, UUID departmentId) throws NotFoundException {
         Employee employee = employeeRepository.findById(id)
             .orElseThrow(() -> new NotFoundException());
         
@@ -64,7 +64,8 @@ public class EmployeeService {
         }
         
         employee.setDepartment(departmentRepository.findById(departmentId).get());
-        return employeeRepository.save(employee);
+        Employee savedEmployee = employeeRepository.save(employee);
+        return employeeMapper.toDto(savedEmployee);
     } 
 
     public Page<EmployeeDto> getEmployeesById(UUID departmentId,Pageable pageable) throws NotFoundException {

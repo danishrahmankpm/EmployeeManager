@@ -28,8 +28,8 @@ public class DepartmentService {
     @Autowired
     EmployeeMapper employeeMapper;
     
-    public Department createDepartment(DepartmentDto departmentDto) {
-        return departmentRepository.save(departmentMapper.toEntity(departmentDto));
+    public DepartmentDto createDepartment(DepartmentDto departmentDto) {
+        return departmentMapper.toDto(departmentRepository.save(departmentMapper.toEntity(departmentDto)));
         
     }
 
@@ -41,14 +41,14 @@ public class DepartmentService {
         }
     }
 
-    public Department updateDepartment(UUID id, DepartmentDto departmentDto) throws NotFoundException {
+    public DepartmentDto updateDepartment(UUID id, DepartmentDto departmentDto) throws NotFoundException {
         Department existing = departmentRepository.findById(id)
             .orElseThrow(() -> new NotFoundException());
         
         // Map updated fields onto the existing entity
         departmentMapper.updateEntityFromDto(departmentDto, existing);
         
-        return departmentRepository.save(existing);
+        return departmentMapper.toDto(departmentRepository.save(existing));
     }
 
     public Page<DepartmentDto> getAll(Pageable pageable) {

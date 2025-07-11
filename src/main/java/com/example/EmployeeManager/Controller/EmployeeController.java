@@ -25,7 +25,7 @@ public class EmployeeController {
     @Autowired private EmployeeService service;
 
     @PostMapping("/create")
-    public ResponseEntity<Employee> create(@RequestBody EmployeeDto dto) {
+    public ResponseEntity<EmployeeDto> create(@RequestBody EmployeeDto dto) {
         try {
             return ResponseEntity.ok(service.create(dto));
         } catch (Exception e) {
@@ -34,7 +34,7 @@ public class EmployeeController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Employee> update(@PathVariable UUID id, @RequestBody EmployeeDto dto) {
+    public ResponseEntity<EmployeeDto> update(@PathVariable UUID id, @RequestBody EmployeeDto dto) {
         try {
             return ResponseEntity.ok(service.update(id, dto));
         } catch (Exception e) {
@@ -43,10 +43,10 @@ public class EmployeeController {
     }   
 
     @PatchMapping("/{id}/department")
-    public ResponseEntity<Employee> updateEmployeeDepartment(
+    public ResponseEntity<EmployeeDto> updateEmployeeDepartment(
             @PathVariable UUID id, @RequestParam UUID departmentId) {
         try {
-            return ResponseEntity.ok(service.updateEmplyeeDepartment(id, departmentId));
+            return ResponseEntity.ok(service.updateEmployeeDepartment(id, departmentId));
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }

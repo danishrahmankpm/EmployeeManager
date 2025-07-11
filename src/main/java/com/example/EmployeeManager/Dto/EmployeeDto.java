@@ -20,8 +20,7 @@ public class EmployeeDto {
     private String address;
     private String title;
     private Department department;
-    private UUID departmentId;
     private Employee manager;
-    private UUID managerId;
+    
     
 }

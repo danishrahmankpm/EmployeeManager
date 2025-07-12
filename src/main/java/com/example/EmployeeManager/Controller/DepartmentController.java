@@ -13,9 +13,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.example.EmployeeManager.Dto.DepartmentDto;
-import com.example.EmployeeManager.Dto.EmployeeDto;
-import com.example.EmployeeManager.Model.Department;
+
+import com.example.EmployeeManager.Dto.DepartmentDto.DepartmentRequestDto;
+import com.example.EmployeeManager.Dto.DepartmentDto.DepartmentResponseDto;
+import com.example.EmployeeManager.Dto.EmployeeDto.EmployeeNameIdDto;
 import com.example.EmployeeManager.Service.DepartmentService;
 
 @RestController
@@ -26,7 +27,7 @@ public class DepartmentController {
     private DepartmentService departmentService;
 
     @PostMapping("/create")
-    public ResponseEntity<DepartmentDto> createDepartment(@RequestBody DepartmentDto departmentDto) {
+    public ResponseEntity<DepartmentResponseDto> createDepartment(@RequestBody DepartmentRequestDto departmentDto) {
         return ResponseEntity.ok(departmentService.createDepartment(departmentDto));
     }
 
@@ -40,7 +41,7 @@ public class DepartmentController {
         }
     }
     @PostMapping("/{id}/update")
-    public ResponseEntity<DepartmentDto> updateDepartment(@PathVariable UUID id, @RequestBody DepartmentDto departmentDto) {
+    public ResponseEntity<DepartmentResponseDto> updateDepartment(@PathVariable UUID id, @RequestBody DepartmentRequestDto departmentDto) {
         try {
             return ResponseEntity.ok(departmentService.updateDepartment(id, departmentDto));
         } catch (Exception e) {
@@ -48,7 +49,7 @@ public class DepartmentController {
         }
     }
     @GetMapping("/{id}")
-    public ResponseEntity<DepartmentDto> getDepartmentById(@PathVariable UUID id) {
+    public ResponseEntity<DepartmentResponseDto> getDepartmentById(@PathVariable UUID id) {
         try {
             return ResponseEntity.ok(departmentService.getDepartmentById(id));
         } catch (Exception e) {
@@ -57,7 +58,7 @@ public class DepartmentController {
     }
 
     @GetMapping("/{id}/lookup")
-    public ResponseEntity<Page<EmployeeDto>> getEmployeesByDepartment(@PathVariable UUID id, @PageableDefault(page = 0, size = 20) Pageable pageable) {
+    public ResponseEntity<Page<EmployeeNameIdDto>> getEmployeesByDepartment(@PathVariable UUID id, @PageableDefault(page = 0, size = 20) Pageable pageable) {
         try {
             return ResponseEntity.ok(departmentService.getEmployeesByDepartment(id, pageable));
         } catch (Exception e) {
@@ -66,7 +67,7 @@ public class DepartmentController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<Page<DepartmentDto>> getAll(@PageableDefault(page = 0, size = 20) Pageable pageable) {
+    public ResponseEntity<Page<DepartmentResponseDto>> getAll(@PageableDefault(page = 0, size = 20) Pageable pageable) {
         return ResponseEntity.ok(departmentService.getAll(pageable));
     }
 }

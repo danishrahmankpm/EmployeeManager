@@ -5,8 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doAnswer;
-import java.math.BigDecimal;
-import java.time.LocalDate;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -20,8 +19,9 @@ import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.example.EmployeeManager.Dto.EmployeeDto;
-import com.example.EmployeeManager.Dto.EmployeeNameIdDto;
+import com.example.EmployeeManager.Dto.EmployeeDto.EmployeeNameIdDto;
+import com.example.EmployeeManager.Dto.EmployeeDto.EmployeeRequestDto;
+import com.example.EmployeeManager.Dto.EmployeeDto.EmployeeResponseDto;
 import com.example.EmployeeManager.Mapper.EmployeeMapper;
 import com.example.EmployeeManager.Model.Department;
 import com.example.EmployeeManager.Model.Employee;
@@ -35,17 +35,19 @@ public class EmployeeServiceTest {
 
     @InjectMocks private EmployeeService employeeService;
 
-    private EmployeeDto employeeDto;
+    private EmployeeResponseDto employeeResponseDto;
+    private EmployeeRequestDto employeeRequestDto;
     private Employee employee;
     private UUID deptId = UUID.randomUUID();
 
     @BeforeEach
     void setup() {
-        employeeDto = new EmployeeDto();
-        employeeDto.setName("Aarav Sharma");
-        employeeDto.setSalary(BigDecimal.valueOf(60000));
-        employeeDto.setJoiningDate(LocalDate.of(2022, 1, 1));
+        employeeResponseDto = new EmployeeResponseDto();
+        employeeResponseDto.setName("Aarav Sharma");
         
+        employeeRequestDto=new EmployeeRequestDto();
+        employeeRequestDto.setName("Aarav Sharma");
+
         employee = new Employee();
         employee.setId(UUID.randomUUID());
         employee.setName("Aarav Sharma");
@@ -53,11 +55,11 @@ public class EmployeeServiceTest {
     @Test
     void testCreateEmployeeSuccess() throws NotFoundException {
         
-        when(employeeMapper.toEntity(employeeDto)).thenReturn(employee);
+        when(employeeMapper.toEntity(employeeRequestDto)).thenReturn(employee);
         when(employeeRepository.save(any(Employee.class))).thenReturn(employee);
-        when(employeeMapper.toDto(employee)).thenReturn(employeeDto);
+        when(employeeMapper.toResponseDto(employee)).thenReturn(employeeResponseDto);
 
-        EmployeeDto result = employeeService.create(employeeDto);
+        EmployeeResponseDto result = employeeService.create(employeeRequestDto);
 
         assertEquals("Aarav Sharma", result.getName());
         verify(employeeRepository).save(employee);
@@ -66,65 +68,52 @@ public class EmployeeServiceTest {
     
     @Test
     void testUpdateEmployeeSuccess() throws NotFoundException {
-        UUID employeeId = UUID.randomUUID();
-        
-        
-        employee.setId(employeeId);
-        employee.setName("Old Name");
-
-        employeeDto.setName("Updated Name");
+        UUID employeeId = employee.getId();
+        employeeResponseDto.setName("Rohith Sharma");
 
         when(employeeRepository.findById(employeeId)).thenReturn(Optional.of(employee));
         
         doAnswer(invocation -> {
-            employee.setName(employeeDto.getName());
+            employee.setName(employeeResponseDto.getName());
             return employee;
-        }).when(employeeMapper).updateEntityFromDto(employeeDto, employee);
+        }).when(employeeMapper).updateEntityFromRequestDto(employeeRequestDto, employee);
 
         when(employeeRepository.save(employee)).thenReturn(employee);
-        when(employeeMapper.toDto(employee)).thenReturn(employeeDto);
+        when(employeeMapper.toResponseDto(employee)).thenReturn(employeeResponseDto);
 
         
-        EmployeeDto result = employeeService.update(employeeId, employeeDto);
+        EmployeeResponseDto result = employeeService.update(employeeId, employeeRequestDto);
 
-        assertEquals("Updated Name", result.getName());
+        assertEquals("Rohith Sharma", result.getName());
         verify(employeeRepository).save(employee);
     }
 
     @Test
     void updateEmployeeDepartmentSuccess() throws NotFoundException {
-        UUID employeeId = UUID.randomUUID();
+        
         UUID newDeptId = UUID.randomUUID();
-        
-        Employee existingEmployee = new Employee();
-        existingEmployee.setId(employeeId);
-        existingEmployee.setName("Aarav Sharma");
-        
         Department newDepartment = new Department();
         newDepartment.setId(newDeptId);
-        existingEmployee.setDepartment(newDepartment);
-
-        EmployeeDto employeeDto = new EmployeeDto();
-        employeeDto.setName("Aarav Sharma");
-        employeeDto.setDepartment(existingEmployee.getDepartment());
-        employeeDto.setId(employeeId);
-
-        when(employeeRepository.findById(employeeId)).thenReturn(Optional.of(existingEmployee));
-        when(departmentRepository.findById(newDeptId)).thenReturn(Optional.of(newDepartment));
-        when(employeeRepository.save(existingEmployee)).thenReturn(existingEmployee);
-        when(employeeMapper.toDto(existingEmployee)).thenReturn(employeeDto);
+        employee.setDepartment(newDepartment);
+        employeeResponseDto.setDepartmentId(newDeptId.toString());
         
-        EmployeeDto updatedEmployee= employeeService.updateEmployeeDepartment(employeeId, newDeptId);
-        assertEquals(updatedEmployee.getDepartment(), newDepartment);
+
+        when(employeeRepository.findById(employee.getId())).thenReturn(Optional.of(employee));
+        when(departmentRepository.findById(newDeptId)).thenReturn(Optional.of(newDepartment));
+        when(employeeRepository.save(employee)).thenReturn(employee);
+        when(employeeMapper.toResponseDto(employee)).thenReturn(employeeResponseDto);
+        
+        EmployeeResponseDto updatedEmployee= employeeService.updateEmployeeDepartment(employee.getId(), newDeptId);
+        assertEquals(updatedEmployee.getDepartmentId(), newDepartment.getId().toString());
         
     }
     @Test
     void testGetAllEmployees() {
         
         when(employeeRepository.findAll()).thenReturn(List.of(employee));
-        when(employeeMapper.toDtoList(any())).thenReturn(List.of(employeeDto));
+        when(employeeMapper.toResponseDtoList(any())).thenReturn(List.of(employeeResponseDto));
 
-        Page<EmployeeDto> result = employeeService.getAll(Pageable.unpaged());
+        Page<EmployeeResponseDto> result = employeeService.getAll(Pageable.unpaged());
 
         assertEquals(1, result.getTotalElements());
         assertEquals("Aarav Sharma", result.getContent().get(0).getName());
@@ -136,9 +125,9 @@ public class EmployeeServiceTest {
         
         when(departmentRepository.findById(departmentId)).thenReturn(Optional.of(new Department()));
         when(employeeRepository.findByDepartmentId(departmentId)).thenReturn(List.of(employee));
-        when(employeeMapper.toDtoList(any())).thenReturn(List.of(employeeDto));
+        when(employeeMapper.toResponseDtoList(any())).thenReturn(List.of(employeeResponseDto));
 
-        Page<EmployeeDto> result = employeeService.getEmployeesById(departmentId, Pageable.unpaged());
+        Page<EmployeeResponseDto> result = employeeService.getEmployeesById(departmentId, Pageable.unpaged());
 
         assertEquals(1, result.getTotalElements());
         assertEquals("Aarav Sharma", result.getContent().get(0).getName());
@@ -149,7 +138,7 @@ public class EmployeeServiceTest {
         when(employeeRepository.findAll()).thenReturn(List.of(employee));
         when(employeeMapper.toNameIdDtoList(any())).thenReturn(List.of(new EmployeeNameIdDto("Aarav Sharma", employee.getId().toString())));
 
-        Page<EmployeeNameIdDto> result = employeeService.getEmployeeNamesAndIds(Pageable.unpaged());
+        Page<EmployeeNameIdDto> result = employeeService.getAllNamesAndIds(Pageable.unpaged());
 
         assertEquals(1, result.getTotalElements());
         assertEquals("Aarav Sharma", result.getContent().get(0).getName());

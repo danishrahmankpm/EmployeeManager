@@ -1,6 +1,7 @@
 package com.example.EmployeeManager.Controller;
 
-import com.example.EmployeeManager.Dto.EmployeeDto;
+
+import com.example.EmployeeManager.Dto.EmployeeDto.EmployeeResponseDto;
 import com.example.EmployeeManager.Service.EmployeeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -12,8 +13,7 @@ import org.springframework.data.domain.*;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
+
 import java.util.Collections;
 import java.util.UUID;
 
@@ -33,19 +33,12 @@ class EmployeeControllerTest {
     private final UUID empId = UUID.randomUUID();
     private final UUID deptId = UUID.randomUUID();
 
-    private EmployeeDto sampleDto() {
-        EmployeeDto dto = new EmployeeDto();
-        
-        dto.setName("Aarav Sharma");
-        dto.setSalary(BigDecimal.valueOf(50000));
-        dto.setJoiningDate(LocalDate.of(2022, 1, 1));
-        
-        return dto;
-    }
 
     @Test
     void testCreateEmployee() throws Exception {
-        EmployeeDto dto = sampleDto();
+        EmployeeResponseDto dto = new EmployeeResponseDto();
+        dto.setId(empId.toString());
+        dto.setName("Aarav Sharma");
 
         Mockito.when(employeeService.create(any())).thenReturn(dto);
 
@@ -58,8 +51,9 @@ class EmployeeControllerTest {
 
     @Test
     void testUpdateEmployee() throws Exception {
-        EmployeeDto dto = sampleDto();
-        dto.setName("Updated Name");
+        EmployeeResponseDto dto = new EmployeeResponseDto();
+        dto.setId(empId.toString());
+        dto.setName("Rohith Sharma");
 
         Mockito.when(employeeService.update(eq(empId), any())).thenReturn(dto);
 
@@ -67,13 +61,16 @@ class EmployeeControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dto)))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.name").value("Updated Name"));
+            .andExpect(jsonPath("$.name").value("Rohith Sharma"));
     }
 
     @Test
     void testUpdateEmployeeDepartment() throws Exception {
-        EmployeeDto dto = sampleDto();
-        dto.setName("With New Dept");
+        UUID randomId= UUID.randomUUID();
+        EmployeeResponseDto dto = new EmployeeResponseDto();
+        dto.setId(empId.toString());
+        dto.setName("Aarav Sharma");
+        dto.setDepartmentId(randomId.toString());
 
         Mockito.when(employeeService.updateEmployeeDepartment(eq(empId), eq(deptId)))
                .thenReturn(dto);
@@ -81,18 +78,8 @@ class EmployeeControllerTest {
         mockMvc.perform(patch("/employees/{id}/department", empId)
                 .param("departmentId", deptId.toString()))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.name").value("With New Dept"));
+            .andExpect(jsonPath("$.departmentId").value(randomId.toString()));
     }
 
-    @Test
-    void testGetAllEmployees() throws Exception {
-        EmployeeDto dto = sampleDto();
-        Page<EmployeeDto> page = new PageImpl<>(Collections.singletonList(dto));
-
-        Mockito.when(employeeService.getAll(any(Pageable.class))).thenReturn(page);
-
-        mockMvc.perform(get("/employees/all"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.content[0].name").value("Aarav Sharma"));
-    }
+    
 }

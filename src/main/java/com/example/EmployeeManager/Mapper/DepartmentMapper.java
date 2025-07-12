@@ -2,49 +2,57 @@ package com.example.EmployeeManager.Mapper;
 
 import java.util.List;
 
-import org.modelmapper.ModelMapper;
+
 import org.springframework.stereotype.Component;
 
-import com.example.EmployeeManager.Dto.DepartmentDto;
+import com.example.EmployeeManager.Dto.DepartmentDto.DepartmentRequestDto;
+import com.example.EmployeeManager.Dto.DepartmentDto.DepartmentResponseDto;
 import com.example.EmployeeManager.Model.Department;
+
 
 @Component
 public class DepartmentMapper {
 
-    private final ModelMapper modelMapper;
+    
 
-    public DepartmentMapper(ModelMapper modelMapper) {
-        this.modelMapper = modelMapper;
+    public DepartmentResponseDto toResponseDto(Department entity) {
+        DepartmentResponseDto dto = new DepartmentResponseDto();
+        dto.setName(entity.getName());
+        dto.setCreationDate(entity.getCreationDate());
+        dto.setId(entity.getId().toString());
+        if(entity.getHead()!= null) {
+            dto.setHeadId(entity.getHead().getId().toString());
+        }   
+        return dto;
     }
 
-    public DepartmentDto toDto(Department entity) {
-        return modelMapper.map(entity, DepartmentDto.class);
+    public Department toEntity(DepartmentRequestDto dto) {
+        Department department = new Department();
+        department.setName(dto.getName());
+        department.setCreationDate(dto.getCreationDate());
+        return department;
     }
 
-    public Department toEntity(DepartmentDto dto) {
-        return modelMapper.map(dto, Department.class);
+    public void updateEntityFromRequestDto(DepartmentRequestDto dto, Department entity) {
+        entity.setName(dto.getName());
+        entity.setCreationDate(dto.getCreationDate());
     }
 
-    public void updateEntityFromDto(DepartmentDto dto, Department entity) {
-        modelMapper.map(dto, entity);
+    public void updateDtoFromEntity(Department entity, DepartmentRequestDto dto) {
+        dto.setName(entity.getName());
+        dto.setCreationDate(entity.getCreationDate());
     }
-
-    public void fillMissingDtoFieldsFromEntity(DepartmentDto targetDto, Department sourceEntity) {
-        ModelMapper skipNonNullMapper = new ModelMapper();
-        skipNonNullMapper.getConfiguration()
-            .setPropertyCondition(ctx -> ctx.getDestination() == null);
-
-        skipNonNullMapper.map(sourceEntity, targetDto);
-    }
-    public List<DepartmentDto> toDtoList(List<Department> departments) {
+    public List<DepartmentResponseDto> toResponseDtoList(List<Department> departments) {
         return departments.stream()
-            .map(this::toDto)
+            .map(this::toResponseDto)
             .toList();
     }
-    public List<Department> toEntityList(List<DepartmentDto> departmentDtos) {
+    public List<Department> toEntityList(List<DepartmentRequestDto> departmentDtos) {
         return departmentDtos.stream()
             .map(this::toEntity)
             .toList();
     }
+
+    
 }
 

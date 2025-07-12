@@ -8,8 +8,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import com.example.EmployeeManager.Dto.DepartmentDto;
-import com.example.EmployeeManager.Dto.EmployeeDto;
+
+import com.example.EmployeeManager.Dto.DepartmentDto.DepartmentRequestDto;
+import com.example.EmployeeManager.Dto.DepartmentDto.DepartmentResponseDto;
+import com.example.EmployeeManager.Dto.EmployeeDto.EmployeeNameIdDto;
+import com.example.EmployeeManager.Dto.EmployeeDto.EmployeeRequestDto;
 import com.example.EmployeeManager.Mapper.DepartmentMapper;
 import com.example.EmployeeManager.Mapper.EmployeeMapper;
 import com.example.EmployeeManager.Model.Department;
@@ -28,8 +31,8 @@ public class DepartmentService {
     @Autowired
     EmployeeMapper employeeMapper;
     
-    public DepartmentDto createDepartment(DepartmentDto departmentDto) {
-        return departmentMapper.toDto(departmentRepository.save(departmentMapper.toEntity(departmentDto)));
+    public DepartmentResponseDto createDepartment(DepartmentRequestDto departmentDto) {
+        return departmentMapper.toResponseDto(departmentRepository.save(departmentMapper.toEntity(departmentDto)));
         
     }
 
@@ -41,33 +44,31 @@ public class DepartmentService {
         }
     }
 
-    public DepartmentDto updateDepartment(UUID id, DepartmentDto departmentDto) throws NotFoundException {
+    public DepartmentResponseDto updateDepartment(UUID id, DepartmentRequestDto departmentDto) throws NotFoundException {
         Department existing = departmentRepository.findById(id)
             .orElseThrow(() -> new NotFoundException());
         
-        // Map updated fields onto the existing entity
-        departmentMapper.updateEntityFromDto(departmentDto, existing);
-        
-        return departmentMapper.toDto(departmentRepository.save(existing));
+        departmentMapper.updateEntityFromRequestDto(departmentDto, existing);
+        return departmentMapper.toResponseDto(departmentRepository.save(existing));
     }
 
-    public Page<DepartmentDto> getAll(Pageable pageable) {
-        // This method should return a paginated list of departments
+    public Page<DepartmentResponseDto> getAll(Pageable pageable) {
+        
         List<Department> departments = departmentRepository.findAll();
-        List<DepartmentDto> departmentDtos = departmentMapper.toDtoList(departments);
-        Page<DepartmentDto> departmentPage = new PageImpl<>(departmentDtos, pageable, departments.size());
+        List<DepartmentResponseDto> departmentDtos = departmentMapper.toResponseDtoList(departments);
+        Page<DepartmentResponseDto> departmentPage = new PageImpl<>(departmentDtos, pageable, departments.size());
         return departmentPage;
     }
 
-    public DepartmentDto getDepartmentById(UUID id) throws NotFoundException {
+    public DepartmentResponseDto getDepartmentById(UUID id) throws NotFoundException {
         
         Department department = departmentRepository.findById(id)
             .orElseThrow(() -> new NotFoundException());
         
-            return departmentMapper.toDto(department);
+            return departmentMapper.toResponseDto(department);
     }
 
-    public Page<EmployeeDto> getEmployeesByDepartment(UUID departmentId,Pageable pageable) throws NotFoundException {
+    public Page<EmployeeNameIdDto> getEmployeesByDepartment(UUID departmentId,Pageable pageable) throws NotFoundException {
         Department department = departmentRepository.findById(departmentId)
             .orElseThrow(() -> new NotFoundException());
         
@@ -75,8 +76,8 @@ public class DepartmentService {
         if (employees.isEmpty()) {
             throw new NotFoundException();
         }
-        List<EmployeeDto> employeeDtos = employeeMapper.toDtoList(employees);
-        Page<EmployeeDto> employeePage = new PageImpl<>(employeeDtos, pageable, employeeDtos.size());
+        List<EmployeeNameIdDto> employeeDtos = employeeMapper.toEmployeeNameIdDtoList(employees);
+        Page<EmployeeNameIdDto> employeePage = new PageImpl<>(employeeDtos, pageable, employees.size());
         return employeePage;
     }
 

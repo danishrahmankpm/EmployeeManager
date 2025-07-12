@@ -3,6 +3,9 @@ package com.example.EmployeeManager.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,14 +20,16 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.example.EmployeeManager.Dto.DepartmentDto;
-import com.example.EmployeeManager.Dto.EmployeeDto;
+import com.example.EmployeeManager.Dto.DepartmentDto.DepartmentRequestDto;
+import com.example.EmployeeManager.Dto.DepartmentDto.DepartmentResponseDto;
+import com.example.EmployeeManager.Dto.EmployeeDto.EmployeeNameIdDto;
 import com.example.EmployeeManager.Mapper.DepartmentMapper;
 import com.example.EmployeeManager.Mapper.EmployeeMapper;
 import com.example.EmployeeManager.Model.Department;
 import com.example.EmployeeManager.Model.Employee;
 import com.example.EmployeeManager.Repository.DepartmentRepository;
 import com.example.EmployeeManager.Repository.EmployeeRepository;
+
 
 
 @ExtendWith(MockitoExtension.class)
@@ -36,21 +41,33 @@ public class DepartmentServiceTest {
 
     @InjectMocks private DepartmentService departmentService;
 
+    private DepartmentRequestDto departmentRequestDto;
+    private DepartmentResponseDto departmentResponseDto;
+    private Department department;
+    @BeforeEach
+    void setUp() {
+        departmentRequestDto = new DepartmentRequestDto();
+        departmentRequestDto.setName("Engineering");
+
+        department = new Department();
+        department.setId(UUID.randomUUID());
+        department.setName("Engineering");
+
+        departmentResponseDto = new DepartmentResponseDto();
+        departmentResponseDto.setId(department.getId().toString());
+        departmentResponseDto.setName(department.getName());
+    }
     
     @Test
     void testCreateDepartmentSuccess() {
-        DepartmentDto departmentDto = new DepartmentDto();
-        departmentDto.setName("Engineering");
-        Department department = new Department();
-        department.setId(UUID.randomUUID());
-        department.setName("Engineering");
-        departmentDto.setId(department.getId());
+        
+       
 
-        when(departmentMapper.toEntity(departmentDto)).thenReturn(department);
+        when(departmentMapper.toEntity(departmentRequestDto)).thenReturn(department);
         when(departmentRepository.save(any(Department.class))).thenReturn(department);
-        when(departmentMapper.toDto(department)).thenReturn(departmentDto);
+        when(departmentMapper.toResponseDto(department)).thenReturn(departmentResponseDto);
 
-        DepartmentDto result = departmentService.createDepartment(departmentDto);
+        DepartmentResponseDto result = departmentService.createDepartment(departmentRequestDto);
 
         assertEquals("Engineering", result.getName());
         verify(departmentRepository).save(department);
@@ -58,32 +75,23 @@ public class DepartmentServiceTest {
 
     @Test
     void testUpdateDepartmentSuccess() throws NotFoundException {
-        UUID id = UUID.randomUUID();
-        Department existingDepartment = new Department();
-        existingDepartment.setId(id);
-        existingDepartment.setName("Engineering");
-
-        DepartmentDto departmentDto = new DepartmentDto();
-        departmentDto.setName("Engineering");
-        departmentDto.setId(id);
+        UUID id = department.getId();
         
-        when(departmentRepository.findById(id)).thenReturn(Optional.of(existingDepartment));
+        when(departmentRepository.findById(id)).thenReturn(Optional.of(department));
       
-        doNothing().when(departmentMapper).updateEntityFromDto(departmentDto, existingDepartment);
-        when(departmentRepository.save(existingDepartment)).thenReturn(existingDepartment);
-        when(departmentMapper.toDto(existingDepartment)).thenReturn(departmentDto);
+        doNothing().when(departmentMapper).updateEntityFromRequestDto(departmentRequestDto, department);
+        when(departmentRepository.save(department)).thenReturn(department);
+        when(departmentMapper.toResponseDto(department)).thenReturn(departmentResponseDto);
 
-        DepartmentDto result = departmentService.updateDepartment(id, departmentDto);
+        DepartmentResponseDto result = departmentService.updateDepartment(id, departmentRequestDto);
 
         assertEquals("Engineering", result.getName());
-        verify(departmentRepository).save(existingDepartment);
+        verify(departmentRepository).save(department);
     }
     @Test
     void testDeleteDepartmentSuccess() throws NotFoundException {
-        UUID id = UUID.randomUUID();
-        Department department = new Department();
-        department.setId(id);
-
+        UUID id = department.getId();
+        
         when(departmentRepository.findById(id)).thenReturn(Optional.of(department));
         doNothing().when(departmentRepository).deleteById(id);
 
@@ -93,58 +101,41 @@ public class DepartmentServiceTest {
     }
     @Test
     void testGetDepartmentByIdSuccess() throws NotFoundException {
-        UUID id = UUID.randomUUID();
-        Department department = new Department();
-        department.setId(id);
-        department.setName("Engineering");
-        DepartmentDto departmentDto = new DepartmentDto();
-        departmentDto.setId(id);
-        departmentDto.setName("Engineering");
+        UUID id = department.getId();
 
         when(departmentRepository.findById(id)).thenReturn(Optional.of(department));
-        when(departmentMapper.toDto(department)).thenReturn(departmentDto);
+        when(departmentMapper.toResponseDto(department)).thenReturn(departmentResponseDto);
 
-        DepartmentDto result = departmentService.getDepartmentById(id);
+        DepartmentResponseDto result = departmentService.getDepartmentById(id);
 
         assertEquals("Engineering", result.getName());
         verify(departmentRepository).findById(id);
     }
     @Test
     void testGetAllDepartmentsSuccess() {
-        Department department = new Department();
-        department.setName("Engineering");
-        department.setId(UUID.randomUUID());
-
-        DepartmentDto departmentDto = new DepartmentDto();
-        departmentDto.setName("Engineering");
-        departmentDto.setId(department.getId());
+        
 
         when(departmentRepository.findAll()).thenReturn(List.of(department));
-        when(departmentMapper.toDtoList(List.of(department))).thenReturn(List.of(departmentDto));
+        when(departmentMapper.toResponseDtoList(List.of(department))).thenReturn(List.of(departmentResponseDto));
 
-        Page<DepartmentDto> result = departmentService.getAll(Pageable.unpaged());
+        Page<DepartmentResponseDto> result = departmentService.getAll(Pageable.unpaged());
 
         assertEquals(1, result.getTotalElements());
         assertEquals("Engineering", result.getContent().get(0).getName());
     }
     @Test
     void testGetEmployeesByDepartmentSuccess() throws NotFoundException {
-        UUID departmentId = UUID.randomUUID();
-        Department department = new Department();
-        department.setId(departmentId);
-        department.setName("Engineering");
+        UUID departmentId= department.getId();
         Employee employee = new Employee();
-        employee.setId(UUID.randomUUID());
         employee.setName("John Doe");
-        EmployeeDto employeeDto = new EmployeeDto();
-        employeeDto.setId(employee.getId());
+        EmployeeNameIdDto employeeDto = new EmployeeNameIdDto();
         employeeDto.setName("John Doe");
-        
+
         when(departmentRepository.findById(departmentId)).thenReturn(Optional.of(department));
         when(employeeRepository.findByDepartmentId(departmentId)).thenReturn(List.of(employee));
-        when(employeeMapper.toDtoList(List.of(employee))).thenReturn(List.of(employeeDto));
+        when(employeeMapper.toEmployeeNameIdDtoList(List.of(employee))).thenReturn(List.of(employeeDto));
 
-        Page<EmployeeDto> result = departmentService.getEmployeesByDepartment(departmentId, Pageable.unpaged());
+        Page<EmployeeNameIdDto> result = departmentService.getEmployeesByDepartment(departmentId, Pageable.unpaged());
 
         assertEquals(1, result.getTotalElements());
         assertEquals("John Doe", result.getContent().get(0).getName());

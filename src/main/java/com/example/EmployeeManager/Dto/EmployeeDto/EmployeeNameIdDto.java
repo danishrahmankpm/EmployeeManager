@@ -1,4 +1,4 @@
-package com.example.EmployeeManager.Dto;
+package com.example.EmployeeManager.Dto.EmployeeDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

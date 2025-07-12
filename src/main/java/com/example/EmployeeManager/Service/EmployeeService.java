@@ -8,8 +8,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import com.example.EmployeeManager.Dto.EmployeeDto;
-import com.example.EmployeeManager.Dto.EmployeeNameIdDto;
+
+import com.example.EmployeeManager.Dto.EmployeeDto.EmployeeNameIdDto;
+import com.example.EmployeeManager.Dto.EmployeeDto.EmployeeRequestDto;
+import com.example.EmployeeManager.Dto.EmployeeDto.EmployeeResponseDto;
 import com.example.EmployeeManager.Mapper.DepartmentMapper;
 import com.example.EmployeeManager.Mapper.EmployeeMapper;
 import com.example.EmployeeManager.Model.Employee;
@@ -29,33 +31,20 @@ public class EmployeeService {
     EmployeeMapper employeeMapper;
 
 
-    
-
-    public Page<EmployeeDto> getAll(Pageable pageable) {
-        // This method should return a paginated list of employees
-        List<Employee> employees= employeeRepository.findAll();
-        List<EmployeeDto> employeeDtos = employeeMapper.toDtoList(employees);
-        Page<EmployeeDto> employeePage = new PageImpl<>(employeeDtos, pageable, employeeDtos.size());
-        return employeePage;
-    }
-
-    
-
-    public EmployeeDto create(EmployeeDto employeeDto) throws NotFoundException {
-        return employeeMapper.toDto(employeeRepository.save(employeeMapper.toEntity(employeeDto)));
+    public EmployeeResponseDto create(EmployeeRequestDto employeeDto) throws NotFoundException {
+        return employeeMapper.toResponseDto(employeeRepository.save(employeeMapper.toEntity(employeeDto)));
 
     }
 
-    public EmployeeDto update(UUID id, EmployeeDto dto) throws NotFoundException {
+    public EmployeeResponseDto update(UUID id, EmployeeRequestDto dto) throws NotFoundException {
         Employee existing = employeeRepository.findById(id)
         .orElseThrow(() -> new NotFoundException());
-        // Map updated fields onto the existing entity
-        employeeMapper.updateEntityFromDto(dto, existing);
+        employeeMapper.updateEntityFromRequestDto(dto, existing);
         Employee saved = employeeRepository.save(existing);
-        return employeeMapper.toDto(saved);
+        return employeeMapper.toResponseDto(saved);
     }
     
-    public EmployeeDto updateEmployeeDepartment(UUID id, UUID departmentId) throws NotFoundException {
+    public EmployeeResponseDto updateEmployeeDepartment(UUID id, UUID departmentId) throws NotFoundException {
         Employee employee = employeeRepository.findById(id)
             .orElseThrow(() -> new NotFoundException());
         
@@ -65,24 +54,67 @@ public class EmployeeService {
         
         employee.setDepartment(departmentRepository.findById(departmentId).get());
         Employee savedEmployee = employeeRepository.save(employee);
-        return employeeMapper.toDto(savedEmployee);
+        return employeeMapper.toResponseDto(savedEmployee);
     } 
 
-    public Page<EmployeeDto> getEmployeesById(UUID departmentId,Pageable pageable) throws NotFoundException {
+    public Page<EmployeeResponseDto> getEmployeesById(UUID departmentId,Pageable pageable) throws NotFoundException {
         if (departmentRepository.findById(departmentId).isEmpty()) {
             throw new NotFoundException();
         }
         
         List<Employee> employees = employeeRepository.findByDepartmentId(departmentId);
-        List<EmployeeDto> employeeDtos = employeeMapper.toDtoList(employees);
-        Page<EmployeeDto> employeePage = new PageImpl<>(employeeDtos, pageable, employeeDtos.size());
+        List<EmployeeResponseDto> employeeDtos = employeeMapper.toResponseDtoList(employees);
+        Page<EmployeeResponseDto> employeePage = new PageImpl<>(employeeDtos, pageable, employeeDtos.size());
         return employeePage;
     }
-    public Page<EmployeeNameIdDto> getEmployeeNamesAndIds(Pageable pageable) {
+    
+    public Page<EmployeeNameIdDto> getAllNamesAndIds(Pageable pageable) {
         List<Employee> employees = employeeRepository.findAll();
         List<EmployeeNameIdDto> employeeDtos = employeeMapper.toNameIdDtoList(employees);
         Page<EmployeeNameIdDto> employeePage = new PageImpl<>(employeeDtos, pageable, employeeDtos.size());
         return employeePage;
     }
+
+    public void deleteAll()throws NotFoundException {
+        List<Employee> employees = employeeRepository.findAll();
+        if (employees.isEmpty()) {
+            throw new NotFoundException();
+        }
+        employeeRepository.deleteAll(employees);
+    }
+
+    public EmployeeResponseDto updateEmployeeManager(UUID id, UUID managerId) throws NotFoundException {
+        Employee employee = employeeRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException());
+        
+        if (employeeRepository.findById(managerId).isEmpty()) {
+            throw new NotFoundException();
+        }   
+        
+        employee.setManager(employeeRepository.findById(managerId).get());
+        Employee savedEmployee = employeeRepository.save(employee);
+        return employeeMapper.toResponseDto(savedEmployee);
+    }
+
+    public void delete(UUID id) throws NotFoundException {
+       
+        if (employeeRepository.findById(id).isPresent()) {
+            employeeRepository.deleteById(id);
+        } else {
+            throw new NotFoundException();
+        }
+        
+    }
+
+    public Page<EmployeeResponseDto> getAll(Pageable pageable) {
+        
+        List<Employee> employees= employeeRepository.findAll();
+        List<EmployeeResponseDto> employeeDtos = employeeMapper.toResponseDtoList(employees);
+        Page<EmployeeResponseDto> employeePage = new PageImpl<>(employeeDtos, pageable, employeeDtos.size());
+        return employeePage;
+    }
+
+
+
     
 }

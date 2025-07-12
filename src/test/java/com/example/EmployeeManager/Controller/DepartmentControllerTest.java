@@ -1,6 +1,7 @@
 package com.example.EmployeeManager.Controller;
 
-import com.example.EmployeeManager.Dto.DepartmentDto;
+
+import com.example.EmployeeManager.Dto.DepartmentDto.DepartmentResponseDto;
 import com.example.EmployeeManager.Model.Department;
 import com.example.EmployeeManager.Service.DepartmentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,7 +32,7 @@ class DepartmentControllerTest {
 
     @Test
     void testCreateDepartment() throws Exception {
-        DepartmentDto dto = new DepartmentDto();
+        DepartmentResponseDto dto = new DepartmentResponseDto();
         dto.setName("Engineering");
         dto.setCreationDate(LocalDate.now());
         Department department = new Department();
@@ -50,8 +51,8 @@ class DepartmentControllerTest {
     @Test
     void testGetDepartmentByIdSuccess() throws Exception {
         UUID id = UUID.randomUUID();
-        DepartmentDto dto = new DepartmentDto();
-        dto.setId(id);
+        DepartmentResponseDto dto = new DepartmentResponseDto();
+        dto.setId(id.toString());
         dto.setName("HR");
 
         Mockito.when(departmentService.getDepartmentById(id)).thenReturn(dto);
@@ -71,12 +72,10 @@ class DepartmentControllerTest {
     @Test
     void testUpdateDepartment() throws Exception {
         UUID id = UUID.randomUUID();
-        DepartmentDto dto = new DepartmentDto();
+        DepartmentResponseDto dto = new DepartmentResponseDto();
         dto.setName("UpdatedDept");
         dto.setCreationDate(LocalDate.now());
-        Department updated = new Department();
-        updated.setId(id);
-        updated.setName("UpdatedDept");
+        
 
         Mockito.when(departmentService.updateDepartment(eq(id), any())).thenReturn(dto);
 
@@ -89,10 +88,10 @@ class DepartmentControllerTest {
 
     @Test
     void testGetAllDepartments() throws Exception {
-        DepartmentDto dto = new DepartmentDto();
+        DepartmentResponseDto dto = new DepartmentResponseDto();
         dto.setName("Finance");
         dto.setCreationDate(LocalDate.now());
-        Page<DepartmentDto> page = new PageImpl<>(Collections.singletonList(dto));
+        Page<DepartmentResponseDto> page = new PageImpl<>(Collections.singletonList(dto));
 
         Mockito.when(departmentService.getAll(any(Pageable.class))).thenReturn(page);
 

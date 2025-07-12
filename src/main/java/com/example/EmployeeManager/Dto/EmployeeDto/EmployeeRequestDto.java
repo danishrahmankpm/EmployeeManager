@@ -1,17 +1,14 @@
-package com.example.EmployeeManager.Dto;
+package com.example.EmployeeManager.Dto.EmployeeDto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.UUID;
 
-import com.example.EmployeeManager.Model.Department;
-import com.example.EmployeeManager.Model.Employee;
 import lombok.Data;
 
 @Data
-public class EmployeeDto {
+public class EmployeeRequestDto {
     
-    private UUID id;
+    
     private String name;
     private LocalDate dob;
     private BigDecimal salary;
@@ -19,8 +16,7 @@ public class EmployeeDto {
     private Double yearlyBonusPercent;
     private String address;
     private String title;
-    private Department department;
-    private Employee manager;
+    
     
     
 }

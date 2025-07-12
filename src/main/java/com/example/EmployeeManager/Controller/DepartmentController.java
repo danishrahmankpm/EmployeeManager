@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.EmployeeManager.Dto.DepartmentDto.DepartmentRequestDto;
@@ -57,8 +58,8 @@ public class DepartmentController {
         }
     }
 
-    @GetMapping("/{id}/lookup")
-    public ResponseEntity<Page<EmployeeNameIdDto>> getEmployeesByDepartment(@PathVariable UUID id, @PageableDefault(page = 0, size = 20) Pageable pageable) {
+    @GetMapping("bydept/{id}")
+    public ResponseEntity<Page<EmployeeNameIdDto>> getEmployeesByDepartment(@PathVariable UUID id, @PageableDefault(page = 0, size = 20) Pageable pageable,@RequestParam(required = true) Boolean expand) {
         try {
             return ResponseEntity.ok(departmentService.getEmployeesByDepartment(id, pageable));
         } catch (Exception e) {
@@ -70,4 +71,5 @@ public class DepartmentController {
     public ResponseEntity<Page<DepartmentResponseDto>> getAll(@PageableDefault(page = 0, size = 20) Pageable pageable) {
         return ResponseEntity.ok(departmentService.getAll(pageable));
     }
+    
 }

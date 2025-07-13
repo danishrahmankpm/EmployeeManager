@@ -26,7 +26,7 @@ A RESTful Spring Boot application to manage employees and departments in an orga
 
 #### 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/EmployeeManager.git
+git clone https://github.com/danishrahmankpm/EmployeeManager.git
 ```
 #### 2. Setup your local MySQL DB and configure it in application.properties (src/main/resources/application.properties):
 ```bash

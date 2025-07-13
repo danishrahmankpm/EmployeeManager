@@ -79,7 +79,7 @@ class DepartmentControllerTest {
 
         Mockito.when(departmentService.updateDepartment(eq(id), any())).thenReturn(dto);
 
-        mockMvc.perform(post("/departments/{id}/update", id)
+        mockMvc.perform(put("/departments/{id}", id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dto)))
             .andExpect(status().isOk())

@@ -66,17 +66,21 @@ public class DepartmentService {
             return departmentMapper.toResponseDto(department);
     }
 
-    public Page<EmployeeNameIdDto> getEmployeesByDepartment(UUID departmentId,Pageable pageable) throws NotFoundException {
-        Department department = departmentRepository.findById(departmentId)
-            .orElseThrow(() -> new NotFoundException());
-        
-        List<Employee> employees = employeeRepository.findByDepartmentId(departmentId);
-        if (employees.isEmpty()) {
-            throw new NotFoundException();
+    public Page<EmployeeNameIdDto> getEmployeesByDepartment(UUID departmentId,Pageable pageable,Boolean expand) throws NotFoundException, IllegalArgumentException {
+        if(expand){
+            Department department = departmentRepository.findById(departmentId)
+                .orElseThrow(() -> new NotFoundException());
+            
+            List<Employee> employees = employeeRepository.findByDepartmentId(departmentId);
+            if (employees.isEmpty()) {
+                throw new NotFoundException();
+            }
+            List<EmployeeNameIdDto> employeeDtos = employeeMapper.toEmployeeNameIdDtoList(employees);
+            Page<EmployeeNameIdDto> employeePage = new PageImpl<>(employeeDtos, pageable, employees.size());
+            return employeePage;
+        } else {
+            throw new IllegalArgumentException("Lookup parameter must be true to fetch employees by department");
         }
-        List<EmployeeNameIdDto> employeeDtos = employeeMapper.toEmployeeNameIdDtoList(employees);
-        Page<EmployeeNameIdDto> employeePage = new PageImpl<>(employeeDtos, pageable, employees.size());
-        return employeePage;
     }
 
     

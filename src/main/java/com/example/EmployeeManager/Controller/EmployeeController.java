@@ -47,7 +47,7 @@ public class EmployeeController {
 
     @PatchMapping("/{id}/department")
     public ResponseEntity<EmployeeResponseDto> updateEmployeeDepartment(
-            @PathVariable UUID id, @RequestParam UUID departmentId) {
+            @PathVariable UUID id, @RequestParam(required = true) UUID departmentId) {
         try {
             return ResponseEntity.ok(service.updateEmployeeDepartment(id, departmentId));
         } catch (Exception e) {
@@ -60,9 +60,13 @@ public class EmployeeController {
         return ResponseEntity.ok(service.getAll(pageable));
     }
 
-    @GetMapping("/allnamesandids")
+    @GetMapping("/id-name-list")
     public ResponseEntity<Page<EmployeeNameIdDto>>  getAllNamesAndIds(@PageableDefault(page = 0, size = 20) Pageable pageable,@RequestParam(required = true) Boolean lookup) {
-        return ResponseEntity.ok(service.getAllNamesAndIds(pageable));
+        try {
+            return ResponseEntity.ok(service.getAllNamesAndIds(pageable,lookup));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
     }
     
     @DeleteMapping("/all")

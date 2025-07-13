@@ -2,14 +2,17 @@ package com.example.EmployeeManager.Controller;
 
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -41,7 +44,7 @@ public class DepartmentController {
             return ResponseEntity.notFound().build();
         }
     }
-    @PostMapping("/{id}/update")
+    @PutMapping("/{id}")
     public ResponseEntity<DepartmentResponseDto> updateDepartment(@PathVariable UUID id, @RequestBody DepartmentRequestDto departmentDto) {
         try {
             return ResponseEntity.ok(departmentService.updateDepartment(id, departmentDto));
@@ -58,13 +61,20 @@ public class DepartmentController {
         }
     }
 
-    @GetMapping("bydept/{id}")
+    @GetMapping("/{id}/employees")
     public ResponseEntity<Page<EmployeeNameIdDto>> getEmployeesByDepartment(@PathVariable UUID id, @PageableDefault(page = 0, size = 20) Pageable pageable,@RequestParam(required = true) Boolean expand) {
         try {
-            return ResponseEntity.ok(departmentService.getEmployeesByDepartment(id, pageable));
+            return ResponseEntity.ok(departmentService.getEmployeesByDepartment(id, pageable, expand));
         } catch (Exception e) {
-            return ResponseEntity.notFound().build();
+            if (e instanceof NotFoundException) {
+                return ResponseEntity.notFound().build();
+            } else if (e instanceof IllegalArgumentException) {
+                return ResponseEntity.badRequest().build();
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
         }
+
     }
 
     @GetMapping("/all")

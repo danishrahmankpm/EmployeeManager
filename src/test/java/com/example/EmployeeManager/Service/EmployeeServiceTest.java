@@ -138,7 +138,7 @@ public class EmployeeServiceTest {
         when(employeeRepository.findAll()).thenReturn(List.of(employee));
         when(employeeMapper.toNameIdDtoList(any())).thenReturn(List.of(new EmployeeNameIdDto("Aarav Sharma", employee.getId().toString())));
 
-        Page<EmployeeNameIdDto> result = employeeService.getAllNamesAndIds(Pageable.unpaged());
+        Page<EmployeeNameIdDto> result = employeeService.getAllNamesAndIds(Pageable.unpaged(),true);
 
         assertEquals(1, result.getTotalElements());
         assertEquals("Aarav Sharma", result.getContent().get(0).getName());

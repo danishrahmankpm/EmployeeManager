@@ -135,7 +135,7 @@ public class DepartmentServiceTest {
         when(employeeRepository.findByDepartmentId(departmentId)).thenReturn(List.of(employee));
         when(employeeMapper.toEmployeeNameIdDtoList(List.of(employee))).thenReturn(List.of(employeeDto));
 
-        Page<EmployeeNameIdDto> result = departmentService.getEmployeesByDepartment(departmentId, Pageable.unpaged());
+        Page<EmployeeNameIdDto> result = departmentService.getEmployeesByDepartment(departmentId, Pageable.unpaged(),true);
 
         assertEquals(1, result.getTotalElements());
         assertEquals("John Doe", result.getContent().get(0).getName());

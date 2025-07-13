@@ -68,11 +68,16 @@ public class EmployeeService {
         return employeePage;
     }
     
-    public Page<EmployeeNameIdDto> getAllNamesAndIds(Pageable pageable) {
+    public Page<EmployeeNameIdDto> getAllNamesAndIds(Pageable pageable,boolean lookup) throws IllegalArgumentException {
+        if(lookup){
         List<Employee> employees = employeeRepository.findAll();
         List<EmployeeNameIdDto> employeeDtos = employeeMapper.toNameIdDtoList(employees);
         Page<EmployeeNameIdDto> employeePage = new PageImpl<>(employeeDtos, pageable, employeeDtos.size());
         return employeePage;
+        }
+        else{
+            throw new IllegalArgumentException("Lookup parameter must be true to fetch names and ids");
+        } 
     }
 
     public void deleteAll()throws NotFoundException {

@@ -4,7 +4,7 @@ A RESTful Spring Boot application to manage employees and departments in an orga
 
 ---
 
-### 🚀 Features
+### Features
 
 - Create, update, delete employees and departments
 - Assign employees to departments and managers
@@ -12,7 +12,7 @@ A RESTful Spring Boot application to manage employees and departments in an orga
 
 ---
 
-### 🛠️ Tech Stack
+### Tech Stack
 
 - **Java 17**
 - **Spring Boot**
@@ -22,7 +22,7 @@ A RESTful Spring Boot application to manage employees and departments in an orga
 
 ---
 
-### ⚙️ Setup Instructions
+### Setup Instructions
 
 #### 1. Clone the repository
 ```bash

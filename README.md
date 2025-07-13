@@ -15,10 +15,10 @@ A RESTful Spring Boot application to manage employees and departments in an orga
 ### Tech Stack
 
 - **Java 17**
-- **Spring Boot**
+- **Spring Boot 3.5.3**
 - **MySQL**
-- **Gradle**
-- **JUnit 5 + Mockito**
+- **Gradle 8.14.2**
+- **JUnit + Mockito**
 
 ---
 

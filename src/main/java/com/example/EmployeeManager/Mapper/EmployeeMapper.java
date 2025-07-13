@@ -2,10 +2,7 @@ package com.example.EmployeeManager.Mapper;
 
 import java.util.ArrayList;
 import java.util.List;
-
-
 import org.springframework.stereotype.Component;
-
 import com.example.EmployeeManager.Model.Employee;
 import com.example.EmployeeManager.Dto.EmployeeDto.EmployeeNameIdDto;
 import com.example.EmployeeManager.Dto.EmployeeDto.EmployeeRequestDto;

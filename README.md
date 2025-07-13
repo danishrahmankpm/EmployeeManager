@@ -77,7 +77,7 @@ spring.datasource.password=your_password
 
 ### Request JSON Schema:
 #### Employee
-For POST`/employees/create` and PUT`/employees/{id}`
+For POST`/employees/create`(create) and PUT`/employees/{id}`(update)
 ```
 {
   "name": "John Doe",
@@ -90,7 +90,7 @@ For POST`/employees/create` and PUT`/employees/{id}`
 }
 ```
 #### Department
-For POST `/departments/create` and `/departments/{id}`
+For POST `/departments/create`(create) and PUT `/departments/{id}`(update)
 ```
 {
   "name": "Engineering",

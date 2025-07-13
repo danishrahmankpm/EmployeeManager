@@ -8,7 +8,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import com.example.EmployeeManager.Dto.EmployeeDto.EmployeeNameIdDto;
 import com.example.EmployeeManager.Dto.EmployeeDto.EmployeeRequestDto;
 import com.example.EmployeeManager.Dto.EmployeeDto.EmployeeResponseDto;
@@ -76,7 +75,7 @@ public class EmployeeService {
         return employeePage;
         }
         else{
-            throw new IllegalArgumentException("Lookup parameter must be true to fetch names and ids");
+            throw new IllegalArgumentException();
         } 
     }
 

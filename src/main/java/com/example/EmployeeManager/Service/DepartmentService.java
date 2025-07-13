@@ -79,7 +79,7 @@ public class DepartmentService {
             Page<EmployeeNameIdDto> employeePage = new PageImpl<>(employeeDtos, pageable, employees.size());
             return employeePage;
         } else {
-            throw new IllegalArgumentException("Lookup parameter must be true to fetch employees by department");
+            throw new IllegalArgumentException();
         }
     }
 

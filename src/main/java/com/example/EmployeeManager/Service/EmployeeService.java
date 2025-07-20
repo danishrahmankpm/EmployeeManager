@@ -17,6 +17,8 @@ import com.example.EmployeeManager.Model.Employee;
 import com.example.EmployeeManager.Repository.DepartmentRepository;
 import com.example.EmployeeManager.Repository.EmployeeRepository;
 
+
+
 @Service
 public class EmployeeService {
     
@@ -30,7 +32,7 @@ public class EmployeeService {
     EmployeeMapper employeeMapper;
 
 
-    public EmployeeResponseDto create(EmployeeRequestDto employeeDto) throws NotFoundException {
+    public EmployeeResponseDto create(EmployeeRequestDto employeeDto)  {
         return employeeMapper.toResponseDto(employeeRepository.save(employeeMapper.toEntity(employeeDto)));
 
     }
@@ -94,11 +96,18 @@ public class EmployeeService {
         if (employeeRepository.findById(managerId).isEmpty()) {
             throw new NotFoundException();
         }   
-        
+        Employee current= employeeRepository.findById(managerId).orElseThrow(() -> new NotFoundException());
+        while(current.getManager() != null) {
+            if (current.getManager().getId().equals(id)) {
+                throw new IllegalArgumentException("Cannot set employee as their own manager");
+            }
+            current = current.getManager();
+        }
         employee.setManager(employeeRepository.findById(managerId).get());
         Employee savedEmployee = employeeRepository.save(employee);
         return employeeMapper.toResponseDto(savedEmployee);
     }
+    
 
     public void delete(UUID id) throws NotFoundException {
        
@@ -116,6 +125,11 @@ public class EmployeeService {
         List<EmployeeResponseDto> employeeDtos = employeeMapper.toResponseDtoList(employees);
         Page<EmployeeResponseDto> employeePage = new PageImpl<>(employeeDtos, pageable, employeeDtos.size());
         return employeePage;
+    }
+
+    public void createBulk(List<EmployeeRequestDto> dtos) {
+        List<Employee> employees = employeeMapper.toEntityList(dtos);
+        employeeRepository.saveAll(employees);
     }
 
 

@@ -1,5 +1,6 @@
 package com.example.EmployeeManager.Controller;
 
+import java.util.List;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,6 +96,17 @@ public class EmployeeController {
             return ResponseEntity.notFound().build();
         }
     }
+    @PostMapping("bulk")
+    public ResponseEntity<Void> createBulk(@RequestBody List<EmployeeRequestDto> dtos) {
+        try {
+            service.createBulk(dtos);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+    
+
 
     
 }

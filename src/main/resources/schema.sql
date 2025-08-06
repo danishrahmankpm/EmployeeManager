@@ -17,8 +17,24 @@ CREATE TABLE IF NOT EXISTS employee (
     department_id BINARY(16),
     manager_id BINARY(16),
     password VARCHAR(100) ,
-    role VARCHAR(50) NOT NULL,
+    role VARCHAR(50) ,
 
     FOREIGN KEY (department_id) REFERENCES department(id),
     FOREIGN KEY (manager_id) REFERENCES employee(id)
 );
+CREATE TABLE IF NOT EXISTS attendance(
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    employee_id BINARY(16),
+    attendance_date DATE,
+    is_present BOOLEAN,
+    check_in_time TIME,
+    check_out_time TIME,
+    status VARCHAR(50), 
+    
+    CONSTRAINT fk_employee
+        FOREIGN KEY (employee_id)
+        REFERENCES employee(id),
+        
+    CONSTRAINT uc_employee_date UNIQUE (employee_id, attendance_date)
+);
+

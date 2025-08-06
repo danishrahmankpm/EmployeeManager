@@ -27,9 +27,6 @@ public class AuthUserDetailsService implements UserDetailsService {
 
         if (employee.isPresent()) {
             String authority = employee.get().getRole().getAuthority(); 
-            System.out.println("Loading user: " + userId);
-            System.out.println("Password (hashed): " + employee.get().getPassword());
-            System.out.println("Authorities: " + authority);
             return new User(
                 employee.get().getId().toString(),
                 employee.get().getPassword(),

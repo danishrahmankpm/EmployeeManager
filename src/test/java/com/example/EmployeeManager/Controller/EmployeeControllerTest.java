@@ -1,6 +1,7 @@
 package com.example.EmployeeManager.Controller;
 
 
+import com.example.EmployeeManager.Config.TestSecurityConfig;
 import com.example.EmployeeManager.Dto.EmployeeDto.EmployeeResponseDto;
 import com.example.EmployeeManager.Service.EmployeeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,20 +10,18 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.*;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+
 import org.springframework.test.web.servlet.MockMvc;
-
-
-import java.util.Collections;
 import java.util.UUID;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(EmployeeController.class)
+@Import(TestSecurityConfig.class)
 class EmployeeControllerTest {
 
     @Autowired private MockMvc mockMvc;

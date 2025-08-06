@@ -16,6 +16,9 @@ CREATE TABLE IF NOT EXISTS employee (
     title VARCHAR(100),
     department_id BINARY(16),
     manager_id BINARY(16),
+    password VARCHAR(100) ,
+    role VARCHAR(50) NOT NULL,
+
     FOREIGN KEY (department_id) REFERENCES department(id),
     FOREIGN KEY (manager_id) REFERENCES employee(id)
 );

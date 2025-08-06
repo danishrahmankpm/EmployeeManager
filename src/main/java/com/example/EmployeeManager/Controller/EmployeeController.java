@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -29,6 +30,7 @@ public class EmployeeController {
     @Autowired private EmployeeService service;
 
     @PostMapping("/create")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<EmployeeResponseDto> create(@RequestBody EmployeeRequestDto dto) {
         try {
             return ResponseEntity.ok(service.create(dto));
@@ -47,6 +49,7 @@ public class EmployeeController {
     }   
 
     @PatchMapping("/{id}/department")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<EmployeeResponseDto> updateEmployeeDepartment(
             @PathVariable UUID id, @RequestParam(required = true) UUID departmentId) {
         try {
@@ -57,11 +60,13 @@ public class EmployeeController {
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<EmployeeResponseDto>> getAll(@PageableDefault(page = 0, size = 20) Pageable pageable) {
         return ResponseEntity.ok(service.getAll(pageable));
     }
 
     @GetMapping("/id-name-list")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<EmployeeNameIdDto>>  getAllNamesAndIds(@PageableDefault(page = 0, size = 20) Pageable pageable,@RequestParam(required = true) Boolean lookup) {
         try {
             return ResponseEntity.ok(service.getAllNamesAndIds(pageable,lookup));
@@ -71,6 +76,7 @@ public class EmployeeController {
     }
     
     @DeleteMapping("/all")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteAll() {
         try {
             service.deleteAll();
@@ -80,6 +86,7 @@ public class EmployeeController {
         }
     }
     @PatchMapping("/{id}/manager")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<EmployeeResponseDto> updateEmployeeManager(@PathVariable UUID id, @RequestParam UUID managerId) {
         try {
             return ResponseEntity.ok(service.updateEmployeeManager(id, managerId));
@@ -88,6 +95,7 @@ public class EmployeeController {
         }
     }
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         try {
             service.delete(id);
@@ -97,6 +105,7 @@ public class EmployeeController {
         }
     }
     @PostMapping("bulk")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> createBulk(@RequestBody List<EmployeeRequestDto> dtos) {
         try {
             service.createBulk(dtos);

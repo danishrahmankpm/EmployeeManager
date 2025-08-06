@@ -1,6 +1,7 @@
 package com.example.EmployeeManager.Controller;
 
 
+import com.example.EmployeeManager.Config.TestSecurityConfig;
 import com.example.EmployeeManager.Dto.DepartmentDto.DepartmentResponseDto;
 import com.example.EmployeeManager.Model.Department;
 import com.example.EmployeeManager.Service.DepartmentService;
@@ -9,9 +10,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.*;
 import org.springframework.http.MediaType;
+
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
@@ -24,6 +28,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(DepartmentController.class)
+@Import(TestSecurityConfig.class)
+
 class DepartmentControllerTest {
 
     @Autowired private MockMvc mockMvc;

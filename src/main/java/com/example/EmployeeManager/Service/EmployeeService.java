@@ -16,6 +16,7 @@ import com.example.EmployeeManager.Mapper.EmployeeMapper;
 import com.example.EmployeeManager.Model.Employee;
 import com.example.EmployeeManager.Repository.DepartmentRepository;
 import com.example.EmployeeManager.Repository.EmployeeRepository;
+import com.example.EmployeeManager.Util.role;
 
 
 
@@ -33,7 +34,9 @@ public class EmployeeService {
 
 
     public EmployeeResponseDto create(EmployeeRequestDto employeeDto)  {
-        return employeeMapper.toResponseDto(employeeRepository.save(employeeMapper.toEntity(employeeDto)));
+        Employee employee = employeeMapper.toEntity(employeeDto);
+        employee.setRole(role.USER);
+        return employeeMapper.toResponseDto(employeeRepository.save(employee));
 
     }
 

@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,11 +32,13 @@ public class DepartmentController {
     private DepartmentService departmentService;
 
     @PostMapping("/create")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<DepartmentResponseDto> createDepartment(@RequestBody DepartmentRequestDto departmentDto) {
         return ResponseEntity.ok(departmentService.createDepartment(departmentDto));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteDepartment(@PathVariable UUID id) {
         try {
             departmentService.deleteDepartment(id);
@@ -45,6 +48,7 @@ public class DepartmentController {
         }
     }
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<DepartmentResponseDto> updateDepartment(@PathVariable UUID id, @RequestBody DepartmentRequestDto departmentDto) {
         try {
             return ResponseEntity.ok(departmentService.updateDepartment(id, departmentDto));
@@ -53,6 +57,7 @@ public class DepartmentController {
         }
     }
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<DepartmentResponseDto> getDepartmentById(@PathVariable UUID id) {
         try {
             return ResponseEntity.ok(departmentService.getDepartmentById(id));
@@ -62,6 +67,7 @@ public class DepartmentController {
     }
 
     @GetMapping("/{id}/employees")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<EmployeeNameIdDto>> getEmployeesByDepartment(@PathVariable UUID id, @PageableDefault(page = 0, size = 20) Pageable pageable,@RequestParam(required = true) Boolean expand) {
         try {
             return ResponseEntity.ok(departmentService.getEmployeesByDepartment(id, pageable, expand));
@@ -78,6 +84,7 @@ public class DepartmentController {
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<DepartmentResponseDto>> getAll(@PageableDefault(page = 0, size = 20) Pageable pageable) {
         return ResponseEntity.ok(departmentService.getAll(pageable));
     }

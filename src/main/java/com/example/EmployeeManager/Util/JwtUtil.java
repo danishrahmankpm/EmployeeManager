@@ -11,7 +11,7 @@ import java.util.UUID;
 @Component
 public class JwtUtil {
 
-    // Strong 256-bit secret key (store this securely, e.g., as an environment variable)
+    
     private static final String SECRET = "$2a$12$o3PuSTj2U0jkgcjt90FR/OsCvVs2W4U.XuOG.yguI3Etg2iLIpLnC";
     private static final Key KEY = Keys.hmacShaKeyFor(SECRET.getBytes());
 
